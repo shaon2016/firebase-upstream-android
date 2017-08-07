@@ -21,7 +21,7 @@ public class TokenService {
 
 
     private static final String TAG = "TokenService";
-    public static final String BACKEND_SERVER_IP = "c852023e.ngrok.io";
+    public static final String BACKEND_SERVER_IP = "b4a7295.ngrok.io";
     public static final String BACKEND_URL_BASE = "http://" + BACKEND_SERVER_IP;
 
     private Context context;

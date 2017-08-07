@@ -20,6 +20,8 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
 
+
+
         Log.d(TAG, "From: " + remoteMessage.getFrom());
 
         // Check if message contains a data payload.
@@ -29,8 +31,15 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
             String message = remoteMessage.getData().get("message");
             Log.d(TAG, "Message received: " + message);
 
-            showBasicNotification(message);
+            //showBasicNotification(message);
             //showInboxStyleNotification(message);
+
+            // Opening an activity
+            Intent intent = new Intent("android.intent.category.LAUNCHER");
+            intent.setClassName("com.wedevol.fcmtest", "com.wedevol.fcmtest.FcmMessageReceiverDialogActivity");
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra("message", message);
+            startActivity(intent);
         }
 
         // Check if message contains a notification payload.
@@ -54,6 +63,8 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                 .setContentIntent(pendingIntent);
 
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+
 
         manager.notify(0,builder.build());
 

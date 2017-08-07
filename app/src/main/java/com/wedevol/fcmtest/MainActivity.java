@@ -60,8 +60,11 @@ public class MainActivity extends AppCompatActivity implements IRequestListener 
                 Log.d(TAG, "Echo Upstream message logic");
                 String message = editTextEcho.getText().toString();
                 Log.d(TAG, "Message: " + message + ", recipient: " + token);
+
+                String setMsgId = Integer.toString(RANDOM.nextInt());
+                Log.d(TAG, "msgId: " + setMsgId);
                 FirebaseMessaging.getInstance().send(new RemoteMessage.Builder(FCM_PROJECT_SENDER_ID + FCM_SERVER_CONNECTION)
-                        .setMessageId(Integer.toString(RANDOM.nextInt()))
+                        .setMessageId(setMsgId)
                         .addData("message", message)
                         .addData("action", BACKEND_ACTION_ECHO)
                         .build());
