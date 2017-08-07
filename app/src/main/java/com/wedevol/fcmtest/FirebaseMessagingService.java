@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.RemoteMessage;
 
 /**
@@ -15,11 +16,14 @@ import com.google.firebase.messaging.RemoteMessage;
 public class FirebaseMessagingService extends com.google.firebase.messaging.FirebaseMessagingService {
 
     private static final String TAG = "FCMMessagingService";
+    String senderToken;
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
 
+        senderToken = FirebaseInstanceId.getInstance().getToken();
+        Log.d(TAG, "Token: " + senderToken);
 
 
         Log.d(TAG, "From: " + remoteMessage.getFrom());
@@ -31,15 +35,40 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
             String message = remoteMessage.getData().get("message");
             Log.d(TAG, "Message received: " + message);
 
+            String action = remoteMessage.getData().get("action");
+            Log.d(TAG, "Message received and its action: " + action);
+
+            String receiver_token =
+                    remoteMessage.getData().get("receiver_token");
+            Log.d(TAG, "Message received and receiver token: " + receiver_token);
+
+
+            if (action.equals("testChallenge")) {
+                // Opening an activity
+                Intent intent = new Intent("android.intent.category.LAUNCHER");
+                intent.setClassName("com.wedevol.fcmtest", "com.wedevol.fcmtest.FcmMessageReceiverDialogActivity");
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra("message", message);
+                startActivity(intent);
+            }
+
+            if (action.equals("accepted")) {
+                Intent intent = new Intent("android.intent.category.LAUNCHER");
+                intent.setClassName("com.wedevol.fcmtest", "com.wedevol.fcmtest.ChallengeAcceptedActivityWithProgressBar");
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra("message", message);
+                startActivity(intent);
+            }
+
+            if (action.equals("rejected")) {
+
+            }
+
+
             //showBasicNotification(message);
             //showInboxStyleNotification(message);
 
-            // Opening an activity
-            Intent intent = new Intent("android.intent.category.LAUNCHER");
-            intent.setClassName("com.wedevol.fcmtest", "com.wedevol.fcmtest.FcmMessageReceiverDialogActivity");
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra("message", message);
-            startActivity(intent);
+
         }
 
         // Check if message contains a notification payload.
@@ -50,10 +79,10 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
     }
 
     private void showBasicNotification(String message) {
-        Intent i = new Intent(this,MainActivity.class);
+        Intent i = new Intent(this, MainActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(this,0,i,PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
                 .setAutoCancel(true)
@@ -65,16 +94,15 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
 
-
-        manager.notify(0,builder.build());
+        manager.notify(0, builder.build());
 
     }
 
     public void showInboxStyleNotification(String message) {
-        Intent i = new Intent(this,MainActivity.class);
+        Intent i = new Intent(this, MainActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(this,0,i,PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Notification.Builder builder = new Notification.Builder(this)
                 .setContentTitle("Inbox Style notification")

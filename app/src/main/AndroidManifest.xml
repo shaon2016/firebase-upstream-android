@@ -33,7 +33,8 @@
             android:name=".FcmMessageReceiverDialogActivity"
             android:excludeFromRecents="true"
             android:theme="@style/Theme.AppCompat.Dialog" />
-        <activity android:name=".ChallengeMsgActivity"></activity>
+        <activity android:name=".ChallengeMsgActivity" />
+        <activity android:name=".ChallengeAcceptedActivityWithProgressBar"></activity>
     </application>
 
 </manifest>
