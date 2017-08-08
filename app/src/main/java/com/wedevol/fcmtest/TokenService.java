@@ -21,7 +21,7 @@ public class TokenService {
 
 
     private static final String TAG = "TokenService";
-    public static final String BACKEND_SERVER_IP = "3b4a7295.ngrok.io";
+    public static final String BACKEND_SERVER_IP = "4e996690.ngrok.io";
     public static final String BACKEND_URL_BASE = "http://" + BACKEND_SERVER_IP;
 
     private Context context;
@@ -37,7 +37,7 @@ public class TokenService {
 
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(context);
-        String url = BACKEND_URL_BASE + "/PHP/fcmtest/register.php";
+        String url = BACKEND_URL_BASE + "/fcm_upstream_downstream/register.php";
 
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,

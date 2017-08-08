@@ -7,8 +7,18 @@ import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.RemoteMessage;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Firebase Messaging Service to handle push notifications
@@ -16,16 +26,12 @@ import com.google.firebase.messaging.RemoteMessage;
 public class FirebaseMessagingService extends com.google.firebase.messaging.FirebaseMessagingService {
 
     private static final String TAG = "FCMMessagingService";
-    String senderToken;
+    SessoinManager sessionManager;
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
-
-        senderToken = FirebaseInstanceId.getInstance().getToken();
-        Log.d(TAG, "Token: " + senderToken);
-
-
+        sessionManager = new SessoinManager(this);
         Log.d(TAG, "From: " + remoteMessage.getFrom());
 
         // Check if message contains a data payload.
@@ -38,9 +44,9 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
             String action = remoteMessage.getData().get("action");
             Log.d(TAG, "Message received and its action: " + action);
 
-            String receiver_token =
-                    remoteMessage.getData().get("receiver_token");
-            Log.d(TAG, "Message received and receiver token: " + receiver_token);
+            String senderToken =
+                    remoteMessage.getData().get("sender_token");
+            Log.d(TAG, "Message received and receiver token: " + senderToken);
 
 
             if (action.equals("testChallenge")) {
@@ -48,7 +54,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                 Intent intent = new Intent("android.intent.category.LAUNCHER");
                 intent.setClassName("com.wedevol.fcmtest", "com.wedevol.fcmtest.FcmMessageReceiverDialogActivity");
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra("message", message);
+                sessionManager.setKeyGetToken(senderToken);
                 startActivity(intent);
             }
 
@@ -56,8 +62,10 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                 Intent intent = new Intent("android.intent.category.LAUNCHER");
                 intent.setClassName("com.wedevol.fcmtest", "com.wedevol.fcmtest.ChallengeAcceptedActivityWithProgressBar");
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra("message", message);
+
                 startActivity(intent);
+                Log.d(TAG, "Message accepted received and sender token: " + senderToken);
+
             }
 
             if (action.equals("rejected")) {
@@ -77,6 +85,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         }
 
     }
+
 
     private void showBasicNotification(String message) {
         Intent i = new Intent(this, MainActivity.class);
